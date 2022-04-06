@@ -33,8 +33,7 @@ public class ActivityCommand implements CommandExecutor {
                             roles.getString(name + ".duration"));
                     if (doesMeet)
                         this.plugin.activityCheck.giveRole(player, (roles.getString(name + ".id")));
-                    player.sendMessage(name + ": " + (doesMeet ? ChatColor.GREEN + "Meets requirement"
-                            : ChatColor.RED + "Does not meet requirement"));
+                    player.sendMessage(name + ": " + (doesMeet ? ChatColor.GREEN + "requirement met" : ChatColor.RED + "requirement not met"));
                 });
 
                 return true;
