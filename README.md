@@ -2,11 +2,8 @@
 
 <p align="center">
 
-Shields here
-101202
-
-![Spiget Downloads](https://img.shields.io/spiget/downloads/101202)
-![Spiget tested server versions](https://img.shields.io/spiget/tested-versions/101202)
+![Spigot Downloads](https://img.shields.io/spiget/downloads/101202)
+![Spigot tested server versions](https://img.shields.io/spiget/tested-versions/101202)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/thewilloftheshadow/ActivityRoles?sort=semver)
 
 </p>
