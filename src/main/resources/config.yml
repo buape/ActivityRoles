@@ -1,0 +1,23 @@
+# List of the activity roles and their time requirements
+roles:
+  "new-player":
+    id: "000000000000000000000"
+    duration: "5m"
+  "tier-one":
+    id: "000000000000000000000"
+    duration: "2h"
+  "tier-two":
+    id: "000000000000000000000"
+    duration: "6h"
+  "tier-three":
+    id: "000000000000000000000"
+    duration: "1d"
+
+# If true, roles will only be updated when using the /activity command as a player or /activity sync as an admin
+update-on-command: false
+
+# Debug mode
+debug: false
+
+# DO NOT MANUALLY CHANGE THIS
+config-version: 1

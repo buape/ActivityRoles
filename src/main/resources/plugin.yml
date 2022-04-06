@@ -1,0 +1,17 @@
+name: ActivityRoles
+version: ${project.version}
+main: com.shadowdev.activityroles.ActivityRoles
+api-version: 1.13
+author: thewilloftheshadow
+depend: [DiscordSRV]
+website: "https://github.com/thewilloftheshadow/ActivityRoles"
+description: Automatically give and remove Discord roles from players based on their play time within your server.
+permissions:
+    activityroles.check:
+        default: true
+        description: Allows the usage of /activity
+commands:
+    activity:
+        usage: /activity
+        permission: activityroles.check
+        description: Check and resync your activity roles
