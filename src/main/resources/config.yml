@@ -11,23 +11,23 @@
 
 roles:
   "new-player":
-    id: "000000000000000000000"
+    id: "00000000000000000"
     duration: "5m"
     type: "total"
   "tier-one":
-    id: "000000000000000000000"
+    id: "00000000000000000"
     duration: "2h"
     type: "total"
   "tier-two":
-    id: "000000000000000000000"
+    id: "00000000000000000"
     duration: "6h"
     type: "total"
   "active":
-    id: "000000000000000000000"
+    id: "00000000000000000"
     duration: "2w"
     type: "seen"
   "very-active":
-    id: "000000000000000000000"
+    id: "00000000000000000"
     duration: "3d"
     type: "seen"
 
