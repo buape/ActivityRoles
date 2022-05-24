@@ -6,6 +6,8 @@
 #   Giving a player a role based on how recently they have played on the server. (type: "seen")
 #
 # You can list times in either minutes, hours, days, or weeks, by using "m", "h", "d", or "w"
+#
+# NOTE: Offline players will only have their "seen" roles synced, they must be online to have their "total" role synced. This is a MC limitation.
 
 roles:
   "new-player":
