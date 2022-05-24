@@ -20,7 +20,7 @@ public class ActivityCheck {
 
     private final ActivityRoles plugin;
 
-    final Pattern pattern = Pattern.compile("\\d+([wdm])", Pattern.CASE_INSENSITIVE);
+    final Pattern pattern = Pattern.compile("\\d+([wdhm])", Pattern.CASE_INSENSITIVE);
 
     public ActivityCheck(ActivityRoles activityRoles) {
         this.plugin = activityRoles;
@@ -36,42 +36,83 @@ public class ActivityCheck {
         ConfigurationSection roles = this.plugin.getConfig().getConfigurationSection("roles");
         Set<String> roleNames = roles.getKeys(false);
 
-        if (this.plugin.debug)
-            this.plugin.logger.info("All roles: " + roleNames.toString());
+        this.plugin.debug("All roles: " + roleNames.toString());
 
         roleNames.forEach(name -> {
             String id = roles.getString(name + ".id");
             String duration = roles.getString(name + ".duration");
+            String type = roles.getString(name + ".type");
 
             Boolean isValid = verifyTimeDuration(duration);
             if (!isValid)
                 this.plugin.logger.warning("Invalid duration for role " + name + ": " + duration);
 
-            if (this.plugin.debug)
-                this.plugin.logger.info(name + " - ID:" + id + " - Duration: " + duration);
+            this.plugin.debug(name + " - ID:" + id + " - Duration: " + duration + " - Type: " + type);
         });
 
     }
 
-    public Boolean meetsRequirement(Player player, String requirement) {
+    public Boolean meetsSeenRequirement(Player player, String requirement) {
         String timeType = requirement.substring(requirement.length() - 1);
 
-        if (!player.hasPlayedBefore() || player.getLastPlayed() == 0) {
-            if (this.plugin.debug) {
-                this.plugin.logger
-                        .warning("Player " + player.getName() + " has never played before, skipping activity check.");
-            }
+        if (!player.hasPlayedBefore()) {
+
+            this.plugin.debug("Player " + player.getName() + " has never played before, skipping activity check.");
             return false;
         }
 
-        int ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE);
+        long lastSeen = player.getLastSeen();
+        long currentTime = System.currentTimeMillis();
+        long timeDifference = currentTime - lastSeen;
+        long minutesSinceSeen = timeDifference / (1000 * 60);
+        long hoursSinceSeen = minutesSinceSeen / 60;
+        long daysSinceSeen = hoursSinceSeen / 24;
+        long weeksSinceSeen = daysSinceSeen / 7;
+
+        switch (timeType) {
+            case "w":
+                if (weeksSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                    return true;
+                break;
+            case "d":
+                if (daysSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                    return true;
+                break;
+            case "h":
+                if (hoursSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                    return true;
+                break;
+            case "m":
+                if (minutesSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                    return true;
+                break;
+            default:
+                this.plugin.logger.warning("Invalid time type: " + timeType);
+                break;
+        }
+
+        return false;
+
+    }
+
+    public Boolean meetsTotalRequirement(Player player, String requirement) {
+        String timeType = requirement.substring(requirement.length() - 1);
+
+        if (!player.hasPlayedBefore()) {
+
+            this.plugin.debug("Player " + player.getName() + " has never played before, skipping activity check.");
+
+            return false;
+        }
+
+        int ticksPlayed = player.getStatistic(Statistic.PLAY_ONE_MINUTE); // Docs say name misleading, actually returns
+                                                                          // ticks played
         int minutesPlayed = ticksPlayed / (20 * 60);
         int hoursPlayed = minutesPlayed / (60);
         int daysPlayed = hoursPlayed / 24;
+        int weeksPlayed = daysPlayed / 7;
 
-        if (this.plugin.debug) {
-            this.plugin.logger.info("Player " + player.getName() + " has played " + ticksPlayed + " ticks.");
-        }
+        this.plugin.debug("Player " + player.getName() + " has played " + ticksPlayed + " ticks.");
 
         switch (timeType) {
             case "m":
@@ -89,6 +130,11 @@ public class ActivityCheck {
                     return true;
                 }
                 break;
+            case "w":
+                if (weeksPlayed >= Integer.parseInt(requirement.substring(0, requirement.length() - 1))) {
+                    return true;
+                }
+                break;
             default:
                 this.plugin.logger.warning("Invalid time type: " + timeType + " for requirement: " + requirement);
                 break;
@@ -97,21 +143,41 @@ public class ActivityCheck {
         return false;
     }
 
-    public void checkAllPlayers() {
-        if (this.plugin.debug) {
-            this.plugin.logger.info("Scheduled activity check has now started for all online players.");
-        }
-        this.plugin.getServer().getOnlinePlayers().forEach(player -> {
-            ConfigurationSection roles = this.plugin.getConfig().getConfigurationSection("roles");
-            Set<String> roleNames = roles.getKeys(false);
+    public void checkPlayer(Player player) {
+        ConfigurationSection roles = this.plugin.getConfig().getConfigurationSection("roles");
+        Set<String> roleNames = roles.getKeys(false);
 
-            roleNames.forEach(name -> {
-                Boolean doesMeet = this.plugin.activityCheck.meetsRequirement(player,
-                        roles.getString(name + ".duration"));
-                if (doesMeet) {
-                    giveRole(player, roles.getString(name + ".id"));
-                }
-            });
+        roleNames.forEach(name -> {
+            Boolean doesMeet = false;
+            switch (roles.getString(name + ".type")) {
+                case "total":
+                    doesMeet = this.plugin.activityCheck.meetsTotalRequirement(player,
+                            roles.getString(name + ".duration"));
+                    break;
+
+                case "seen":
+                    doesMeet = this.plugin.activityCheck.meetsSeenRequirement(player,
+                            roles.getString(name + ".duration"));
+                    break;
+
+                default:
+                    this.plugin.logger
+                            .warning("Invalid type for role " + name + ": " + roles.getString(name + ".type"));
+                    break;
+            }
+
+            if (doesMeet) {
+                giveRole(player, roles.getString(name + ".id"));
+            } else {
+                removeRole(player, roles.getString(name + ".id"));
+            }
+        });
+    }
+
+    public void checkAllPlayers() {
+        this.plugin.debug("Scheduled activity check has now started for all online players.");
+        this.plugin.getServer().getOnlinePlayers().forEach(player -> {
+            checkPlayer(player);
         });
     }
 
@@ -133,9 +199,7 @@ public class ActivityCheck {
         }
         mainGuild.addRoleToMember(discordPlayerId, jda.getRoleById(roleId)).queue();
 
-        if (this.plugin.debug) {
-            this.plugin.logger.info("Player " + player.getName() + " has been given role " + role.getName() + ".");
-        }
+        this.plugin.debug("Player " + player.getName() + " has been given role " + role.getName() + ".");
     }
 
     public void removeRole(Player player, String roleId) {
@@ -156,8 +220,6 @@ public class ActivityCheck {
         }
         mainGuild.removeRoleFromMember(discordPlayerId, jda.getRoleById(roleId)).queue();
 
-        if (this.plugin.debug) {
-            this.plugin.logger.info("Player " + player.getName() + " has been removed from role " + role.getName() + ".");
-        }
+        this.plugin.debug("Player " + player.getName() + " has been removed from role " + role.getName() + ".");
     }
 }

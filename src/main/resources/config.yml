@@ -1,23 +1,41 @@
-# List of the activity roles and their time requirements
+# ActivityRoles, (c) Shadow 2022
+
+# This plugin manages syncing between a player's Minecraft playtime and their Discord roles.
+# There are two types of syncs:
+#   Giving a player a role based on how long they have ever played on the server. (type: "total")
+#   Giving a player a role based on how recently they have played on the server. (type: "seen")
+#
+# You can list times in either minutes, hours, days, or weeks, by using "m", "h", "d", or "w"
+
 roles:
   "new-player":
     id: "000000000000000000000"
     duration: "5m"
+    type: "total"
   "tier-one":
     id: "000000000000000000000"
     duration: "2h"
+    type: "total"
   "tier-two":
     id: "000000000000000000000"
     duration: "6h"
-  "tier-three":
+    type: "total"
+  "active":
     id: "000000000000000000000"
-    duration: "1d"
+    duration: "2w"
+    type: "seen"
+  "very-active":
+    id: "000000000000000000000"
+    duration: "3d"
+    type: "seen"
 
-# If true, roles will only be updated when using the /activity command as a player or /activity sync as an admin
-update-on-command: false
+
+# If true, roles will only be updated when a player uses the /activity command
+autosync-enabled: true
+# How long should the autosync happen in seconds? Default: 1 minute
+autosync-interval: 60
 
 # Debug mode
 debug: false
-
 # DO NOT MANUALLY CHANGE THIS
-config-version: 1
+config-version: 2

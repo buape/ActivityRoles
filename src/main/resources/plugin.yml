@@ -4,6 +4,7 @@ main: com.shadowdev.activityroles.ActivityRoles
 api-version: 1.13
 author: thewilloftheshadow
 depend: [DiscordSRV]
+load: POSTWORLD
 website: "https://github.com/thewilloftheshadow/ActivityRoles"
 description: Automatically give and remove Discord roles from players based on their play time within your server.
 permissions:
