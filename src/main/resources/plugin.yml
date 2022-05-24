@@ -11,8 +11,20 @@ permissions:
     activityroles.check:
         default: true
         description: Allows the usage of /activity
+    activityroles.lastonline:
+        default: true
+        description: Allows the usage of /lastonline
 commands:
     activity:
         usage: /activity
         permission: activityroles.check
         description: Check and resync your activity roles
+    lastonline:
+        usage: /lastonline
+        permission: activityroles.lastonline
+        description: Check when you last played on the server
+        arguments:
+            - player:
+                description: The player to check
+                type: player
+                optional: false

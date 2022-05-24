@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import com.shadowdev.activityroles.commands.ActivityCommand;
+import com.shadowdev.activityroles.commands.LastOnlineCommand;
 import com.shadowdev.activityroles.tools.ActivityCheck;
 
 import org.apache.commons.io.FileUtils;
@@ -28,6 +29,7 @@ public final class ActivityRoles extends JavaPlugin {
             new Metrics(this, 14862);
 
             getCommand("activity").setExecutor(new ActivityCommand(this));
+            getCommand("lastonline").setExecutor(new LastOnlineCommand(this));
 
             this.activityCheck = new ActivityCheck(this);
 
