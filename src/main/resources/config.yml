@@ -32,7 +32,7 @@ roles:
     type: "seen"
 
 
-# If true, roles will only be updated when a player uses the /activity command
+# If false, roles will only be updated when a player uses the /activity command
 autosync-enabled: true
 # How long should the autosync happen in seconds? Default: 1 minute
 autosync-interval: 60
