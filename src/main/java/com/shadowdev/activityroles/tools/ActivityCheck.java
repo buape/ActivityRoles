@@ -71,19 +71,19 @@ public class ActivityCheck {
 
         switch (timeType) {
             case "w":
-                if (weeksSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                if (weeksSinceSeen <= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
                     return true;
                 break;
             case "d":
-                if (daysSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                if (daysSinceSeen <= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
                     return true;
                 break;
             case "h":
-                if (hoursSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                if (hoursSinceSeen <= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
                     return true;
                 break;
             case "m":
-                if (minutesSinceSeen >= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
+                if (minutesSinceSeen <= Integer.parseInt(requirement.substring(0, requirement.length() - 1)))
                     return true;
                 break;
             default:
