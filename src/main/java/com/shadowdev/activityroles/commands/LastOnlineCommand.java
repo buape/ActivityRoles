@@ -1,6 +1,6 @@
 package com.shadowdev.activityroles.commands;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +20,7 @@ public class LastOnlineCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /lastonline <player>");
             return true;
         }
@@ -29,7 +29,7 @@ public class LastOnlineCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "Player not found.");
             return true;
         }
-        if(target.getLastSeen() == 0) {
+        if (target.getLastSeen() == 0) {
             sender.sendMessage(ChatColor.RED + "Player has never played before.");
             return true;
         }

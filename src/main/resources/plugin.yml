@@ -1,11 +1,11 @@
 name: ActivityRoles
 version: ${project.version}
 main: com.shadowdev.activityroles.ActivityRoles
-api-version: 1.13
+api-version: 1.19
 author: thewilloftheshadow
 depend: [DiscordSRV]
 load: POSTWORLD
-website: "https://github.com/thewilloftheshadow/ActivityRoles"
+website: "https://github.com/buape/ActivityRoles"
 description: Automatically give and remove Discord roles from players based on their play time within your server.
 permissions:
     activityroles.check:
@@ -25,6 +25,6 @@ commands:
         description: Check when you last played on the server
         arguments:
             - player:
-                description: The player to check
-                type: player
-                optional: false
+                  description: The player to check
+                  type: player
+                  optional: false
