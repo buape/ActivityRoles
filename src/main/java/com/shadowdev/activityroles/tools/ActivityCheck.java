@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import com.shadowdev.activityroles.ActivityRoles;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,6 +16,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.JDA;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Guild;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Role;
 import github.scarsz.discordsrv.objects.managers.AccountLinkManager;
+import org.jetbrains.annotations.Nullable;
 
 public class ActivityCheck {
 
@@ -52,7 +54,7 @@ public class ActivityCheck {
 
     }
 
-    public Boolean meetsSeenRequirement(Player player, String requirement) {
+    public Boolean meetsSeenRequirement(OfflinePlayer player, String requirement) {
         String timeType = requirement.substring(requirement.length() - 1);
 
         if (!player.hasPlayedBefore()) {
@@ -143,7 +145,7 @@ public class ActivityCheck {
         return false;
     }
 
-    public void checkPlayer(Player player) {
+    public void checkPlayer(OfflinePlayer player) {
         ConfigurationSection roles = this.plugin.getConfig().getConfigurationSection("roles");
         Set<String> roleNames = roles.getKeys(false);
 
@@ -151,7 +153,9 @@ public class ActivityCheck {
             Boolean doesMeet = false;
             switch (roles.getString(name + ".type")) {
                 case "total":
-                    doesMeet = this.plugin.activityCheck.meetsTotalRequirement(player,
+                    @Nullable Player onlinePlayer = player.getPlayer();
+                    if (onlinePlayer == null) break;
+                    doesMeet = this.plugin.activityCheck.meetsTotalRequirement(onlinePlayer,
                             roles.getString(name + ".duration"));
                     break;
 
@@ -175,19 +179,19 @@ public class ActivityCheck {
     }
 
     public void checkAllPlayers() {
-        this.plugin.debug("Scheduled activity check has now started for all online players.");
-        this.plugin.getServer().getOnlinePlayers().forEach(player -> {
-            checkPlayer(player);
-        });
+        this.plugin.debug("Scheduled activity check has now started for all players.");
+        for (final OfflinePlayer player : this.plugin.getServer().getOfflinePlayers()) {
+            this.checkPlayer(player);
+        }
     }
 
-    public void giveRole(Player player, String roleId) {
+    public void giveRole(OfflinePlayer player, String roleId) {
         AccountLinkManager accountLinkManager = DiscordSRV.getPlugin().getAccountLinkManager();
         Guild mainGuild = DiscordSRV.getPlugin().getMainGuild();
 
         String discordPlayerId = accountLinkManager.getDiscordId(player.getUniqueId());
         if (discordPlayerId == null || discordPlayerId.isEmpty()) {
-            this.plugin.logger.warning("Player " + player.getName() + " has no linked discord account.");
+            this.plugin.debug("Player " + player.getName() + " has no linked discord account.");
             return;
         }
 
@@ -202,13 +206,13 @@ public class ActivityCheck {
         this.plugin.debug("Player " + player.getName() + " has been given role " + role.getName() + ".");
     }
 
-    public void removeRole(Player player, String roleId) {
+    public void removeRole(OfflinePlayer player, String roleId) {
         AccountLinkManager accountLinkManager = DiscordSRV.getPlugin().getAccountLinkManager();
         Guild mainGuild = DiscordSRV.getPlugin().getMainGuild();
 
         String discordPlayerId = accountLinkManager.getDiscordId(player.getUniqueId());
-        if (discordPlayerId.isEmpty()) {
-            this.plugin.logger.warning("Player " + player.getName() + " has no linked discord account.");
+        if (discordPlayerId == null || discordPlayerId.isEmpty()) {
+            this.plugin.debug("Player " + player.getName() + " has no linked discord account.");
             return;
         }
 
