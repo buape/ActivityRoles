@@ -15,6 +15,8 @@ import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.dependencies.jda.api.JDA;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Guild;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Role;
+import github.scarsz.discordsrv.dependencies.jda.api.exceptions.ErrorHandler;
+import github.scarsz.discordsrv.dependencies.jda.api.requests.ErrorResponse;
 import github.scarsz.discordsrv.objects.managers.AccountLinkManager;
 import org.jetbrains.annotations.Nullable;
 
@@ -153,8 +155,10 @@ public class ActivityCheck {
             Boolean doesMeet = false;
             switch (roles.getString(name + ".type")) {
                 case "total":
-                    @Nullable Player onlinePlayer = player.getPlayer();
-                    if (onlinePlayer == null) break;
+                    @Nullable
+                    Player onlinePlayer = player.getPlayer();
+                    if (onlinePlayer == null)
+                        break;
                     doesMeet = this.plugin.activityCheck.meetsTotalRequirement(onlinePlayer,
                             roles.getString(name + ".duration"));
                     break;
@@ -201,7 +205,8 @@ public class ActivityCheck {
             this.plugin.logger.warning("Role " + roleId + " does not exist.");
             return;
         }
-        mainGuild.addRoleToMember(discordPlayerId, jda.getRoleById(roleId)).queue();
+        mainGuild.addRoleToMember(discordPlayerId, jda.getRoleById(roleId)).queue(null,
+                new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MEMBER));
 
         this.plugin.debug("Player " + player.getName() + " has been given role " + role.getName() + ".");
     }
@@ -222,7 +227,8 @@ public class ActivityCheck {
             this.plugin.logger.warning("Role " + roleId + " does not exist.");
             return;
         }
-        mainGuild.removeRoleFromMember(discordPlayerId, jda.getRoleById(roleId)).queue();
+        mainGuild.removeRoleFromMember(discordPlayerId, jda.getRoleById(roleId)).queue(null,
+                new ErrorHandler().ignore(ErrorResponse.UNKNOWN_MEMBER));
 
         this.plugin.debug("Player " + player.getName() + " has been removed from role " + role.getName() + ".");
     }
